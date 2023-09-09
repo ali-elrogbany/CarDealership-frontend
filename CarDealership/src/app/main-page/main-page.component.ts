@@ -13,12 +13,21 @@ export class MainPageComponent implements OnInit {
     cataloguePage: boolean = false;
     singleItemPage: boolean = false;
     newArrivalsPage: boolean = false;
+    engineTypeCarsPage: boolean = false;
+
+    engineTypeName: string = "";
 
     featuredCars: any = [];
     catalogueCars: any = [];
     newArrivalCars: any = [];
+    engineTypeCars: any = [];
 
     selectedCar: any;
+
+    displayedCars: any[] = []; // Array to hold the cars to be displayed on current page
+    itemsPerPage: number = 1; // Number of cars to display per page
+    currentPage: number = 1; // Current page number
+    totalPages: number = 0; // Total number of pages
 
     customOptions: OwlOptions = {
         loop: true,
@@ -63,6 +72,9 @@ export class MainPageComponent implements OnInit {
         this.cataloguePage = false;
         this.singleItemPage = false;
         this.newArrivalsPage = false;
+        this.engineTypeCarsPage = false;
+
+        this.currentPage = 1;
     }
 
     GetNewArrivals(): void {
@@ -82,6 +94,8 @@ export class MainPageComponent implements OnInit {
         this.http.get(environment.BackEndUrl + "/api/car").subscribe(
             (data) => {
                 this.catalogueCars = data;
+                this.totalPages = Math.ceil(this.catalogueCars.length / this.itemsPerPage);
+                this.updateDisplayedCars();
             },
             (error) => {
                 console.log(error);
@@ -91,5 +105,49 @@ export class MainPageComponent implements OnInit {
 
     SetSelectedCar(car: any): void {
         this.selectedCar = car;
+    }
+
+    SetEngineTypePage(_engineType: string) {
+        if (_engineType == "Fuel" || _engineType == "Hybrid" || _engineType == "Electric") {
+            this.engineTypeName = _engineType;
+            this.http.get(environment.BackEndUrl + "/api/car?engineType=" + _engineType).subscribe(
+                (data) => {
+                    this.engineTypeCars = data;
+                },
+                (error) => {
+                    console.log(error);
+                }
+            );
+        }
+    }
+
+    updateDisplayedCars() {
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        this.displayedCars = this.catalogueCars.slice(startIndex, startIndex + this.itemsPerPage);
+    }
+
+    previousPage() {
+        if (this.currentPage > 1) {
+            this.currentPage--;
+            this.updateDisplayedCars();
+        }
+    }
+
+    nextPage() {
+        if (this.currentPage < this.totalPages) {
+            this.currentPage++;
+            this.updateDisplayedCars();
+        }
+    }
+
+    goToPage(pageNumber: number) {
+        if (pageNumber >= 1 && pageNumber <= this.totalPages) {
+            this.currentPage = pageNumber;
+            this.updateDisplayedCars();
+        }
+    }
+
+    getTotalPagesArray(): number[] {
+        return Array.from({ length: this.totalPages }, (_, index) => index + 1);
     }
 }
