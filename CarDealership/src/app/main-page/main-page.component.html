@@ -44,7 +44,7 @@
             <div class="container">
                 <ul class="site-menu js-clone-nav d-none d-md-block">
                     <li>
-                        <button class="btn" (click)="DisableAllViews(); mainPage = true">Home</button>
+                        <button class="btn" (click)="DisableAllViews(true); mainPage = true">Home</button>
                     </li>
                     <li>
                         <button class="btn">About</button>
@@ -53,13 +53,13 @@
                         <button class="btn">Shop</button>
                     </li> -->
                     <li>
-                        <button class="btn" (click)="GetCatalogueItems(); DisableAllViews(); cataloguePage = true">Catalogue</button>
+                        <button class="btn" (click)="DisableAllViews(true); GetCatalogueItems(); cataloguePage = true">Catalogue</button>
                     </li>
                     <li>
-                        <button class="btn" (click)="GetNewArrivals(); DisableAllViews(); newArrivalsPage = true">New Arrivals</button>
+                        <button class="btn" (click)="DisableAllViews(true); GetNewArrivals(); newArrivalsPage = true">New Arrivals</button>
                     </li>
                     <li>
-                        <button class="btn">Contact</button>
+                        <button class="btn" (click)="DisableAllViews(true); contactPage = true">Contact</button>
                     </li>
                 </ul>
             </div>
@@ -92,7 +92,7 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-6 col-md-6 col-lg-4 mb-4 mb-lg-0" data-aos="fade" data-aos-delay="">
-                        <button class="block-2-item my-button" (click)="DisableAllViews(); SetEngineTypePage('Fuel'); engineTypeCarsPage = true">
+                        <button class="block-2-item my-button" (click)="DisableAllViews(true); SetEngineTypePage('Fuel'); engineTypeCarsPage = true">
                             <figure class="image">
                                 <img src="../../assets/images/petrol.jpg" alt="" class="img-fluid" />
                             </figure>
@@ -102,7 +102,7 @@
                         </button>
                     </div>
                     <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0" data-aos="fade" data-aos-delay="100">
-                        <button class="block-2-item my-button" (click)="DisableAllViews(); SetEngineTypePage('Electric'); engineTypeCarsPage = true">
+                        <button class="block-2-item my-button" (click)="DisableAllViews(true); SetEngineTypePage('Electric'); engineTypeCarsPage = true">
                             <figure class="image">
                                 <img src="../../assets/images/electric-car.jpg" alt="" class="img-fluid" />
                             </figure>
@@ -112,7 +112,7 @@
                         </button>
                     </div>
                     <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0" data-aos="fade" data-aos-delay="200" style="height: 100%">
-                        <button class="block-2-item my-button" (click)="DisableAllViews(); SetEngineTypePage('Hybrid'); engineTypeCarsPage = true">
+                        <button class="block-2-item my-button" (click)="DisableAllViews(true); SetEngineTypePage('Hybrid'); engineTypeCarsPage = true">
                             <figure class="image">
                                 <img src="../../assets/images/hybrid.jpg" alt="" class="img-fluid" />
                             </figure>
@@ -191,13 +191,13 @@
                             <div class="col-sm-6 col-lg-4 mb-4" data-aos="fade-up" *ngFor="let car of displayedCars">
                                 <div class="block-4 text-center border">
                                     <figure class="block-4-image">
-                                        <button class="my-button" (click)="SetSelectedCar(car)">
+                                        <button class="my-button" (click)="DisableAllViews(false); SetSelectedCar(car); singleItemPage = true">
                                             <img src="{{ car.img }}" alt="Image placeholder" class="img-fluid" />
                                         </button>
                                     </figure>
                                     <div class="block-4-text p-4">
                                         <h3>
-                                            <button class="my-button" (click)="SetSelectedCar(car)">{{ car.carModel.name }}</button>
+                                            <button class="my-button" (click)="DisableAllViews(false); SetSelectedCar(car); singleItemPage = true">{{ car.carModel.name }}</button>
                                         </h3>
                                         <p class="mb-0">{{ car.carModel.carMake }}</p>
                                         <p class="text-primary font-weight-bold">{{ car.year }}</p>
@@ -209,11 +209,11 @@
                             <div class="col-md-12 text-center">
                                 <div class="site-block-27">
                                     <ul>
-                                        <li><button class="btn btn-secondary btn-sm" (click)="previousPage()">&lt;</button></li>
+                                        <li><button class="btn btn-secondary btn-sm" (click)="previousPage(catalogueCars)">&lt;</button></li>
                                         <li *ngFor="let pageNumber of getTotalPagesArray()" [class.active]="currentPage === pageNumber">
-                                            <button class="btn btn-secondary btn-sm" (click)="goToPage(pageNumber)">{{ pageNumber }}</button>
+                                            <button class="btn btn-secondary btn-sm" (click)="goToPage(pageNumber, catalogueCars)">{{ pageNumber }}</button>
                                         </li>
-                                        <li><button class="btn btn-secondary btn-sm" (click)="nextPage()">&gt;</button></li>
+                                        <li><button class="btn btn-secondary btn-sm" (click)="nextPage(catalogueCars)">&gt;</button></li>
                                     </ul>
                                 </div>
                             </div>
@@ -225,17 +225,17 @@
                             <h3 class="mb-3 h6 text-uppercase text-black d-block">Categories</h3>
                             <ul class="list-unstyled mb-0">
                                 <li class="mb-1">
-                                    <button (click)="DisableAllViews(); SetEngineTypePage('Fuel'); engineTypeCarsPage = true" class="my-second-button d-flex">
+                                    <button (click)="DisableAllViews(true); SetEngineTypePage('Fuel'); engineTypeCarsPage = true" class="my-second-button d-flex">
                                         <span>Petrol</span>
                                     </button>
                                 </li>
                                 <li class="mb-1">
-                                    <button (click)="DisableAllViews(); SetEngineTypePage('Hybrid'); engineTypeCarsPage = true" class="my-second-button d-flex">
+                                    <button (click)="DisableAllViews(true); SetEngineTypePage('Hybrid'); engineTypeCarsPage = true" class="my-second-button d-flex">
                                         <span>Hybrid</span>
                                     </button>
                                 </li>
                                 <li class="mb-1">
-                                    <button (click)="DisableAllViews(); SetEngineTypePage('Electric'); engineTypeCarsPage = true" class="my-second-button d-flex">
+                                    <button (click)="DisableAllViews(true); SetEngineTypePage('Electric'); engineTypeCarsPage = true" class="my-second-button d-flex">
                                         <span>Electric</span>
                                     </button>
                                 </li>
@@ -251,9 +251,12 @@
 
                             <div class="mb-4">
                                 <h3 class="mb-3 h6 text-uppercase text-black d-block">Size</h3>
-                                <label for="s_sm" class="d-flex"> <input type="checkbox" id="s_sm" class="mr-2 mt-1" /> <span class="text-black">Small (2,319)</span> </label>
+                                <select class="d-flex my-filter-dropdown" [(ngModel)]="selectedCarMake">
+                                    <option class="my-filter-dropdown-item" *ngFor="let make of carMakes" value="{{ make.name }}">{{ make.name }}</option>
+                                </select>
+                                <!-- <label for="s_sm" class="d-flex"> <input type="checkbox" id="s_sm" class="mr-2 mt-1" /> <span class="text-black">Small (2,319)</span> </label>
                                 <label for="s_md" class="d-flex"> <input type="checkbox" id="s_md" class="mr-2 mt-1" /> <span class="text-black">Medium (1,282)</span> </label>
-                                <label for="s_lg" class="d-flex"> <input type="checkbox" id="s_lg" class="mr-2 mt-1" /> <span class="text-black">Large (1,392)</span> </label>
+                                <label for="s_lg" class="d-flex"> <input type="checkbox" id="s_lg" class="mr-2 mt-1" /> <span class="text-black">Large (1,392)</span> </label> -->
                             </div>
 
                             <div class="mb-4">
@@ -276,7 +279,7 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-6 col-md-6 col-lg-4 mb-4 mb-lg-0" data-aos="fade" data-aos-delay="">
-                                <button class="block-2-item my-button" (click)="DisableAllViews(); SetEngineTypePage('Fuel'); engineTypeCarsPage = true">
+                                <button class="block-2-item my-button" (click)="DisableAllViews(true); SetEngineTypePage('Fuel'); engineTypeCarsPage = true">
                                     <figure class="image">
                                         <img src="../../assets/images/petrol.jpg" alt="" class="img-fluid" />
                                     </figure>
@@ -286,7 +289,7 @@
                                 </button>
                             </div>
                             <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0" data-aos="fade" data-aos-delay="100">
-                                <button class="block-2-item my-button" (click)="DisableAllViews(); SetEngineTypePage('Electric'); engineTypeCarsPage = true">
+                                <button class="block-2-item my-button" (click)="DisableAllViews(true); SetEngineTypePage('Electric'); engineTypeCarsPage = true">
                                     <figure class="image">
                                         <img src="../../assets/images/electric-car.jpg" alt="" class="img-fluid" />
                                     </figure>
@@ -296,7 +299,7 @@
                                 </button>
                             </div>
                             <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0" data-aos="fade" data-aos-delay="200" style="height: 100%">
-                                <button class="block-2-item my-button" (click)="DisableAllViews(); SetEngineTypePage('Hybrid'); engineTypeCarsPage = true">
+                                <button class="block-2-item my-button" (click)="DisableAllViews(true); SetEngineTypePage('Hybrid'); engineTypeCarsPage = true">
                                     <figure class="image">
                                         <img src="../../assets/images/hybrid.jpg" alt="" class="img-fluid" />
                                     </figure>
@@ -346,16 +349,16 @@
                             </div>
                         </div>
                         <div class="row mb-5">
-                            <div class="col-sm-6 col-lg-4 mb-4" data-aos="fade-up" *ngFor="let car of engineTypeCars">
+                            <div class="col-sm-6 col-lg-4 mb-4" data-aos="fade-up" *ngFor="let car of displayedCars">
                                 <div class="block-4 text-center border">
                                     <figure class="block-4-image">
-                                        <button class="my-button" (click)="SetSelectedCar(car)">
+                                        <button class="my-button" (click)="DisableAllViews(false); SetSelectedCar(car); singleItemPage = true">
                                             <img src="{{ car.img }}" alt="Image placeholder" class="img-fluid" />
                                         </button>
                                     </figure>
                                     <div class="block-4-text p-4">
                                         <h3>
-                                            <button class="my-button" (click)="SetSelectedCar(car)">{{ car.carModel.name }}</button>
+                                            <button class="my-button" (click)="DisableAllViews(false); SetSelectedCar(car); singleItemPage = true">{{ car.carModel.name }}</button>
                                         </h3>
                                         <p class="mb-0">{{ car.carModel.carMake }}</p>
                                         <p class="text-primary font-weight-bold">{{ car.year }}</p>
@@ -367,13 +370,11 @@
                             <div class="col-md-12 text-center">
                                 <div class="site-block-27">
                                     <ul>
-                                        <li><a href="#">&lt;</a></li>
-                                        <li class="active"><span>1</span></li>
-                                        <li><a href="#">2</a></li>
-                                        <li><a href="#">3</a></li>
-                                        <li><a href="#">4</a></li>
-                                        <li><a href="#">5</a></li>
-                                        <li><a href="#">&gt;</a></li>
+                                        <li><button class="btn btn-secondary btn-sm" (click)="previousPage(catalogueCars)">&lt;</button></li>
+                                        <li *ngFor="let pageNumber of getTotalPagesArray()" [class.active]="currentPage === pageNumber">
+                                            <button class="btn btn-secondary btn-sm" (click)="goToPage(pageNumber, catalogueCars)">{{ pageNumber }}</button>
+                                        </li>
+                                        <li><button class="btn btn-secondary btn-sm" (click)="nextPage(catalogueCars)">&gt;</button></li>
                                     </ul>
                                 </div>
                             </div>
@@ -385,17 +386,17 @@
                             <h3 class="mb-3 h6 text-uppercase text-black d-block">Categories</h3>
                             <ul class="list-unstyled mb-0">
                                 <li class="mb-1">
-                                    <button (click)="DisableAllViews(); SetEngineTypePage('Fuel'); engineTypeCarsPage = true" class="my-second-button d-flex">
+                                    <button (click)="DisableAllViews(true); SetEngineTypePage('Fuel'); engineTypeCarsPage = true" class="my-second-button d-flex">
                                         <span>Petrol</span>
                                     </button>
                                 </li>
                                 <li class="mb-1">
-                                    <button (click)="DisableAllViews(); SetEngineTypePage('Hybrid'); engineTypeCarsPage = true" class="my-second-button d-flex">
+                                    <button (click)="DisableAllViews(true); SetEngineTypePage('Hybrid'); engineTypeCarsPage = true" class="my-second-button d-flex">
                                         <span>Hybrid</span>
                                     </button>
                                 </li>
                                 <li class="mb-1">
-                                    <button (click)="DisableAllViews(); SetEngineTypePage('Electric'); engineTypeCarsPage = true" class="my-second-button d-flex">
+                                    <button (click)="DisableAllViews(true); SetEngineTypePage('Electric'); engineTypeCarsPage = true" class="my-second-button d-flex">
                                         <span>Electric</span>
                                     </button>
                                 </li>
@@ -436,7 +437,7 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-6 col-md-6 col-lg-4 mb-4 mb-lg-0" data-aos="fade" data-aos-delay="">
-                                <button class="block-2-item my-button" (click)="DisableAllViews(); SetEngineTypePage('Fuel'); engineTypeCarsPage = true">
+                                <button class="block-2-item my-button" (click)="DisableAllViews(true); SetEngineTypePage('Fuel'); engineTypeCarsPage = true">
                                     <figure class="image">
                                         <img src="../../assets/images/petrol.jpg" alt="" class="img-fluid" />
                                     </figure>
@@ -446,7 +447,7 @@
                                 </button>
                             </div>
                             <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0" data-aos="fade" data-aos-delay="100">
-                                <button class="block-2-item my-button" (click)="DisableAllViews(); SetEngineTypePage('Electric'); engineTypeCarsPage = true">
+                                <button class="block-2-item my-button" (click)="DisableAllViews(true); SetEngineTypePage('Electric'); engineTypeCarsPage = true">
                                     <figure class="image">
                                         <img src="../../assets/images/electric-car.jpg" alt="" class="img-fluid" />
                                     </figure>
@@ -456,7 +457,7 @@
                                 </button>
                             </div>
                             <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0" data-aos="fade" data-aos-delay="200" style="height: 100%">
-                                <button class="block-2-item my-button" (click)="DisableAllViews(); SetEngineTypePage('Hybrid'); engineTypeCarsPage = true">
+                                <button class="block-2-item my-button" (click)="DisableAllViews(true); SetEngineTypePage('Hybrid'); engineTypeCarsPage = true">
                                     <figure class="image">
                                         <img src="../../assets/images/hybrid.jpg" alt="" class="img-fluid" />
                                     </figure>
@@ -466,6 +467,260 @@
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="newArrivalsPage">
+        <div class="site-section">
+            <div class="container">
+                <div class="row mb-5">
+                    <div class="col-md-9 order-2">
+                        <div class="row">
+                            <div class="col-md-12 mb-5">
+                                <div class="float-md-left mb-4">
+                                    <h2 class="text-black h5">Shop New Arrivals</h2>
+                                </div>
+                                <div class="d-flex">
+                                    <div class="dropdown mr-1 ml-md-auto">
+                                        <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" id="dropdownMenuOffset" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Latest</button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuOffset">
+                                            <a class="dropdown-item" href="#">Men</a>
+                                            <a class="dropdown-item" href="#">Women</a>
+                                            <a class="dropdown-item" href="#">Children</a>
+                                        </div>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" id="dropdownMenuReference" data-toggle="dropdown">Reference</button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuReference">
+                                            <a class="dropdown-item" href="#">Relevance</a>
+                                            <a class="dropdown-item" href="#">Name, A to Z</a>
+                                            <a class="dropdown-item" href="#">Name, Z to A</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="#">Price, low to high</a>
+                                            <a class="dropdown-item" href="#">Price, high to low</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-5">
+                            <div class="col-sm-6 col-lg-4 mb-4" data-aos="fade-up" *ngFor="let car of displayedCars">
+                                <div class="block-4 text-center border">
+                                    <figure class="block-4-image">
+                                        <button class="my-button" (click)="DisableAllViews(false); SetSelectedCar(car); singleItemPage = true">
+                                            <img src="{{ car.img }}" alt="Image placeholder" class="img-fluid" />
+                                        </button>
+                                    </figure>
+                                    <div class="block-4-text p-4">
+                                        <h3>
+                                            <button class="my-button" (click)="DisableAllViews(false); SetSelectedCar(car); singleItemPage = true">{{ car.carModel.name }}</button>
+                                        </h3>
+                                        <p class="mb-0">{{ car.carModel.carMake }}</p>
+                                        <p class="text-primary font-weight-bold">{{ car.year }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" data-aos="fade-up">
+                            <div class="col-md-12 text-center">
+                                <div class="site-block-27">
+                                    <ul>
+                                        <li><button class="btn btn-secondary btn-sm" (click)="previousPage(catalogueCars)">&lt;</button></li>
+                                        <li *ngFor="let pageNumber of getTotalPagesArray()" [class.active]="currentPage === pageNumber">
+                                            <button class="btn btn-secondary btn-sm" (click)="goToPage(pageNumber, catalogueCars)">{{ pageNumber }}</button>
+                                        </li>
+                                        <li><button class="btn btn-secondary btn-sm" (click)="nextPage(catalogueCars)">&gt;</button></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 order-1 mb-5 mb-md-0">
+                        <div class="border p-4 rounded mb-4">
+                            <h3 class="mb-3 h6 text-uppercase text-black d-block">Categories</h3>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-1">
+                                    <button (click)="DisableAllViews(true); SetEngineTypePage('Fuel'); engineTypeCarsPage = true" class="my-second-button d-flex">
+                                        <span>Petrol</span>
+                                    </button>
+                                </li>
+                                <li class="mb-1">
+                                    <button (click)="DisableAllViews(true); SetEngineTypePage('Hybrid'); engineTypeCarsPage = true" class="my-second-button d-flex">
+                                        <span>Hybrid</span>
+                                    </button>
+                                </li>
+                                <li class="mb-1">
+                                    <button (click)="DisableAllViews(true); SetEngineTypePage('Electric'); engineTypeCarsPage = true" class="my-second-button d-flex">
+                                        <span>Electric</span>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="border p-4 rounded mb-4">
+                            <div class="mb-4">
+                                <h3 class="mb-3 h6 text-uppercase text-black d-block">Filter by Price</h3>
+                                <div id="slider-range" class="border-primary"></div>
+                                <input type="text" name="text" id="amount" class="form-control border-0 pl-0 bg-white" disabled="" />
+                            </div>
+
+                            <div class="mb-4">
+                                <h3 class="mb-3 h6 text-uppercase text-black d-block">Size</h3>
+                                <label for="s_sm" class="d-flex"> <input type="checkbox" id="s_sm" class="mr-2 mt-1" /> <span class="text-black">Small (2,319)</span> </label>
+                                <label for="s_md" class="d-flex"> <input type="checkbox" id="s_md" class="mr-2 mt-1" /> <span class="text-black">Medium (1,282)</span> </label>
+                                <label for="s_lg" class="d-flex"> <input type="checkbox" id="s_lg" class="mr-2 mt-1" /> <span class="text-black">Large (1,392)</span> </label>
+                            </div>
+
+                            <div class="mb-4">
+                                <h3 class="mb-3 h6 text-uppercase text-black d-block">Color</h3>
+                                <a href="#" class="d-flex color-item align-items-center"> <span class="bg-danger color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Red (2,429)</span> </a>
+                                <a href="#" class="d-flex color-item align-items-center"> <span class="bg-success color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Green (2,298)</span> </a>
+                                <a href="#" class="d-flex color-item align-items-center"> <span class="bg-info color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Blue (1,075)</span> </a>
+                                <a href="#" class="d-flex color-item align-items-center"> <span class="bg-primary color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Purple (1,075)</span> </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="site-section site-blocks-2">
+                    <div class="container">
+                        <div class="row justify-content-center" style="margin-bottom: 3%">
+                            <div class="col-md-7 site-section-heading text-center pt-4">
+                                <h2>Categories</h2>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6 col-md-6 col-lg-4 mb-4 mb-lg-0" data-aos="fade" data-aos-delay="">
+                                <button class="block-2-item my-button" (click)="DisableAllViews(true); SetEngineTypePage('Fuel'); engineTypeCarsPage = true">
+                                    <figure class="image">
+                                        <img src="../../assets/images/petrol.jpg" alt="" class="img-fluid" />
+                                    </figure>
+                                    <div class="text">
+                                        <h3>Petrol</h3>
+                                    </div>
+                                </button>
+                            </div>
+                            <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0" data-aos="fade" data-aos-delay="100">
+                                <button class="block-2-item my-button" (click)="DisableAllViews(true); SetEngineTypePage('Electric'); engineTypeCarsPage = true">
+                                    <figure class="image">
+                                        <img src="../../assets/images/electric-car.jpg" alt="" class="img-fluid" />
+                                    </figure>
+                                    <div class="text">
+                                        <h3>Electric</h3>
+                                    </div>
+                                </button>
+                            </div>
+                            <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0" data-aos="fade" data-aos-delay="200" style="height: 100%">
+                                <button class="block-2-item my-button" (click)="DisableAllViews(true); SetEngineTypePage('Hybrid'); engineTypeCarsPage = true">
+                                    <figure class="image">
+                                        <img src="../../assets/images/hybrid.jpg" alt="" class="img-fluid" />
+                                    </figure>
+                                    <div class="text">
+                                        <h3>Hybrid</h3>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="singleItemPage">
+        <div class="bg-light py-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 mb-0">
+                        <a (click)="DisableAllViews(true); mainPage = true" class="my-second-button">Home</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">{{ selectedCar.year + " " + selectedCar.carModel.carMake + " " + selectedCar.carModel.name }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="site-section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <img src="{{ selectedCar.img }}" alt="Image" class="img-fluid" />
+                    </div>
+                    <div class="col-md-6">
+                        <h2 class="text-black">{{ selectedCar.carModel.carMake + " " + selectedCar.carModel.name }}</h2>
+                        <h5 class="text-black">{{ selectedCar.year }}</h5>
+                        <h3>Specs</h3>
+                        <ul>
+                            <li><strong>Color:</strong> {{ selectedCar.color }}</li>
+                            <li><strong>Milage:</strong> {{ selectedCar.milage }}</li>
+                            <li><strong>Engine Type:</strong> {{ selectedCar.engineType }}</li>
+                            <li><strong>Condition:</strong> {{ selectedCar.condition }}</li>
+                        </ul>
+                        <p><button (click)="DisableAllViews(false); PrepContactForm(); contactPage = true" class="buy-now btn btn-sm btn-primary">Contact us</button></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="contactPage">
+        <div class="bg-light py-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 mb-0">
+                        <a (click)="DisableAllViews(true); mainPage = true" class="my-second-button">Home</a> <span class="mx-2 mb-0">/</span> <a *ngIf="selectedCar" (click)="DisableAllViews(true); mainPage = true" class="my-second-button">{{ selectedCar.year + " " + selectedCar.carModel.carMake + " " + selectedCar.carModel.name }}</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">Contact page</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="site-section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2 class="h3 mb-3 text-black">Get In Touch</h2>
+                    </div>
+                    <div class="col-md-12">
+                        <form #contactForm="ngForm">
+                            <div class="p-3 p-lg-5 border">
+                                <div class="form-group row">
+                                    <div class="col-md-6">
+                                        <label for="c_fname" class="text-black">First Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="c_fname" name="c_fname" [(ngModel)]="contactFormData.firstName" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="c_lname" class="text-black">Last Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="c_lname" name="c_lname" [(ngModel)]="contactFormData.lastName" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-12">
+                                        <label for="c_email" class="text-black">Email <span class="text-danger">*</span></label>
+                                        <input type="email" class="form-control" id="c_email" name="c_email" placeholder="" [(ngModel)]="contactFormData.email" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-12">
+                                        <label for="c_subject" class="text-black">Subject </label>
+                                        <input type="text" class="form-control" id="c_subject" name="c_subject" [(ngModel)]="contactFormData.subject" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-md-12">
+                                        <label for="c_message" class="text-black">Message </label>
+                                        <textarea name="c_message" id="c_message" cols="30" rows="7" class="form-control" [(ngModel)]="contactFormData.body"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-lg-12">
+                                        <button class="btn btn-primary btn-lg btn-block" (click)="SendContactForm(); DisableAllViews(true); mainPage = true">Send Message</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -14,6 +14,7 @@ export class MainPageComponent implements OnInit {
     singleItemPage: boolean = false;
     newArrivalsPage: boolean = false;
     engineTypeCarsPage: boolean = false;
+    contactPage: boolean = false;
 
     engineTypeName: string = "";
 
@@ -22,12 +23,27 @@ export class MainPageComponent implements OnInit {
     newArrivalCars: any = [];
     engineTypeCars: any = [];
 
+    carMakes: any = [];
+    carModels: any = [];
+
     selectedCar: any;
 
+    selectedCarMake: any;
+    selectedCarModel: any;
+
     displayedCars: any[] = []; // Array to hold the cars to be displayed on current page
-    itemsPerPage: number = 1; // Number of cars to display per page
+    itemsPerPage: number = 8; // Number of cars to display per page
     currentPage: number = 1; // Current page number
     totalPages: number = 0; // Total number of pages
+
+    contactFormData: any = {
+        firstName: "",
+        lastName: "",
+        email: "",
+        subject: "",
+        body: "",
+        carID: null,
+    };
 
     customOptions: OwlOptions = {
         loop: true,
@@ -57,9 +73,25 @@ export class MainPageComponent implements OnInit {
     constructor(private http: HttpClient) {}
 
     ngOnInit(): void {
-        this.http.get(environment.BackEndUrl + "/api/car?featured=True").subscribe(
+        this.http.get(environment.BackEndUrl + "/api/car-makes").subscribe(
             (data) => {
-                this.featuredCars = data;
+                this.carMakes = data;
+                this.http.get(environment.BackEndUrl + "/api/car-models").subscribe(
+                    (data) => {
+                        this.carModels = data;
+                        this.http.get(environment.BackEndUrl + "/api/car?featured=True").subscribe(
+                            (data) => {
+                                this.featuredCars = data;
+                            },
+                            (error) => {
+                                console.log(error);
+                            }
+                        );
+                    },
+                    (error) => {
+                        console.log(error);
+                    }
+                );
             },
             (error) => {
                 console.log(error);
@@ -67,14 +99,28 @@ export class MainPageComponent implements OnInit {
         );
     }
 
-    DisableAllViews(): void {
+    DisableAllViews(reset: boolean): void {
         this.mainPage = false;
         this.cataloguePage = false;
         this.singleItemPage = false;
         this.newArrivalsPage = false;
         this.engineTypeCarsPage = false;
+        this.contactPage = false;
 
-        this.currentPage = 1;
+        if (reset) {
+            this.displayedCars = [];
+            this.currentPage = 1;
+            this.totalPages = 0;
+            this.selectedCar = null;
+            this.contactFormData = {
+                firstName: "",
+                lastName: "",
+                email: "",
+                subject: "",
+                body: "",
+                carID: null,
+            };
+        }
     }
 
     GetNewArrivals(): void {
@@ -82,6 +128,8 @@ export class MainPageComponent implements OnInit {
             this.http.get(environment.BackEndUrl + "/api/car?newArrivals=True").subscribe(
                 (data) => {
                     this.newArrivalCars = data;
+                    this.totalPages = Math.ceil(this.newArrivalCars.length / this.itemsPerPage);
+                    this.updateDisplayedCars(this.newArrivalCars);
                 },
                 (error) => {
                     console.log(error);
@@ -95,7 +143,7 @@ export class MainPageComponent implements OnInit {
             (data) => {
                 this.catalogueCars = data;
                 this.totalPages = Math.ceil(this.catalogueCars.length / this.itemsPerPage);
-                this.updateDisplayedCars();
+                this.updateDisplayedCars(this.catalogueCars);
             },
             (error) => {
                 console.log(error);
@@ -113,6 +161,8 @@ export class MainPageComponent implements OnInit {
             this.http.get(environment.BackEndUrl + "/api/car?engineType=" + _engineType).subscribe(
                 (data) => {
                     this.engineTypeCars = data;
+                    this.totalPages = Math.ceil(this.engineTypeCars.length / this.itemsPerPage);
+                    this.updateDisplayedCars(this.engineTypeCars);
                 },
                 (error) => {
                     console.log(error);
@@ -121,33 +171,49 @@ export class MainPageComponent implements OnInit {
         }
     }
 
-    updateDisplayedCars() {
+    updateDisplayedCars(array: any) {
         const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-        this.displayedCars = this.catalogueCars.slice(startIndex, startIndex + this.itemsPerPage);
+        this.displayedCars = array.slice(startIndex, startIndex + this.itemsPerPage);
     }
 
-    previousPage() {
+    previousPage(array: any) {
         if (this.currentPage > 1) {
             this.currentPage--;
-            this.updateDisplayedCars();
+            this.updateDisplayedCars(array);
         }
     }
 
-    nextPage() {
+    nextPage(array: any) {
         if (this.currentPage < this.totalPages) {
             this.currentPage++;
-            this.updateDisplayedCars();
+            this.updateDisplayedCars(array);
         }
     }
 
-    goToPage(pageNumber: number) {
+    goToPage(pageNumber: number, array: any) {
         if (pageNumber >= 1 && pageNumber <= this.totalPages) {
             this.currentPage = pageNumber;
-            this.updateDisplayedCars();
+            this.updateDisplayedCars(array);
         }
     }
 
     getTotalPagesArray(): number[] {
         return Array.from({ length: this.totalPages }, (_, index) => index + 1);
+    }
+
+    PrepContactForm(): void {
+        this.contactFormData.subject = this.selectedCar.year + " " + this.selectedCar.carModel.carMake + " " + this.selectedCar.carModel.name;
+        this.contactFormData.carID = this.selectedCar.id;
+    }
+
+    SendContactForm(): void {
+        this.http.post(environment.BackEndUrl + "/api/messages", this.contactFormData).subscribe(
+            (data) => {
+                console.log(data);
+            },
+            (error) => {
+                console.log(error);
+            }
+        );
     }
 }

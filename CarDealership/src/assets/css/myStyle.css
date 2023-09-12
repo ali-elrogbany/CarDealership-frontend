@@ -76,3 +76,14 @@
 .my-second-button:enabled {
     outline: none;
 }
+
+.my-filter-dropdown {
+    max-height: 180px;
+    overflow-y: scroll;
+    min-width: 100% !important;
+    background-attachment: local, local, scroll, scroll;
+}
+
+.my-filter-dropdown-item {
+    white-space: normal;
+}
