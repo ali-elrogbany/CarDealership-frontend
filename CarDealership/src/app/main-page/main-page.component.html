@@ -25,12 +25,6 @@
                                 <li>
                                     <a href="#"><span class="icon icon-heart-o"></span></a>
                                 </li>
-                                <li>
-                                    <a href="cart.html" class="site-cart">
-                                        <span class="icon icon-shopping_cart"></span>
-                                        <span class="count">2</span>
-                                    </a>
-                                </li>
                                 <li class="d-inline-block d-md-none ml-md-0">
                                     <a href="#" class="site-menu-toggle js-menu-toggle"><span class="icon-menu"></span></a>
                                 </li>
@@ -138,11 +132,15 @@
                             <ng-container *ngFor="let car of featuredCars">
                                 <ng-template carouselSlide [id]="car.id">
                                     <figure class="block-4-image">
-                                        <img src="{{ car.img }}" alt="Image placeholder" class="img-fluid" />
+                                        <button class="my-button" (click)="DisableAllViews(false); SetSelectedCar(car); singleItemPage = true">
+                                            <img src="{{ car.img }}" alt="Image placeholder" class="img-fluid" />
+                                        </button>
                                     </figure>
                                     <div class="block-4-text p-4">
                                         <h3>
-                                            <a href="#">{{ car.carModel.name }}</a>
+                                            <button class="my-button" (click)="DisableAllViews(false); SetSelectedCar(car); singleItemPage = true">
+                                                {{ car.carModel.name }}
+                                            </button>
                                         </h3>
                                         <p class="mb-0">{{ car.carModel.carMake }}</p>
                                         <p class="text-primary font-weight-bold">{{ car.year }}</p>
@@ -243,29 +241,92 @@
                         </div>
 
                         <div class="border p-4 rounded mb-4">
-                            <div class="mb-4">
-                                <h3 class="mb-3 h6 text-uppercase text-black d-block">Filter by Price</h3>
-                                <div id="slider-range" class="border-primary"></div>
-                                <input type="text" name="text" id="amount" class="form-control border-0 pl-0 bg-white" disabled="" />
-                            </div>
+                            <form>
+                                <div class="mb-4">
+                                    <h3 class="mb-3 h6 text-uppercase text-black d-block">Filter</h3>
+                                </div>
 
-                            <div class="mb-4">
-                                <h3 class="mb-3 h6 text-uppercase text-black d-block">Size</h3>
-                                <select class="d-flex my-filter-dropdown" [(ngModel)]="selectedCarMake">
-                                    <option class="my-filter-dropdown-item" *ngFor="let make of carMakes" value="{{ make.name }}">{{ make.name }}</option>
-                                </select>
-                                <!-- <label for="s_sm" class="d-flex"> <input type="checkbox" id="s_sm" class="mr-2 mt-1" /> <span class="text-black">Small (2,319)</span> </label>
-                                <label for="s_md" class="d-flex"> <input type="checkbox" id="s_md" class="mr-2 mt-1" /> <span class="text-black">Medium (1,282)</span> </label>
-                                <label for="s_lg" class="d-flex"> <input type="checkbox" id="s_lg" class="mr-2 mt-1" /> <span class="text-black">Large (1,392)</span> </label> -->
-                            </div>
+                                <div class="mb-4">
+                                    <h3 class="mb-3 h6 text-uppercase text-black d-block">Year</h3>
+                                    <mat-slider #carYearSlider min="2000" max="2025" step="5" discrete="true" showTickMarks="true">
+                                        <input #minYear matSliderStartThumb [(ngModel)]="selectedMinYear" name="minYear" />
+                                        <input #maxYear matSliderEndThumb [(ngModel)]="selectedMaxYear" name="maxYear" />
+                                    </mat-slider>
+                                </div>
 
-                            <div class="mb-4">
-                                <h3 class="mb-3 h6 text-uppercase text-black d-block">Color</h3>
-                                <a href="#" class="d-flex color-item align-items-center"> <span class="bg-danger color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Red (2,429)</span> </a>
-                                <a href="#" class="d-flex color-item align-items-center"> <span class="bg-success color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Green (2,298)</span> </a>
-                                <a href="#" class="d-flex color-item align-items-center"> <span class="bg-info color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Blue (1,075)</span> </a>
-                                <a href="#" class="d-flex color-item align-items-center"> <span class="bg-primary color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Purple (1,075)</span> </a>
-                            </div>
+                                <div class="mb-4">
+                                    <h3 class="mb-3 h6 text-uppercase text-black d-block">Milage</h3>
+                                    <mat-slider #carMilageSlider min="0" max="500000" step="50000" discrete="true" showTickMarks="true">
+                                        <input #minMilage matSliderStartThumb [(ngModel)]="selectedMinMilage" name="minMilage" />
+                                        <input #maxMilage matSliderEndThumb [(ngModel)]="selectedMaxMilage" name="maxMilage" />
+                                    </mat-slider>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h3 class="mb-3 h6 text-uppercase text-black d-block">Makes</h3>
+                                    <mat-form-field>
+                                        <mat-label>Car Makes</mat-label>
+                                        <mat-select #carMakeSelect (opened)="carMakeSelect.openedChange.subscribe(handleSelectOpened)" (closed)="resetMakeSearch()" [(ngModel)]="selectedCarMake" (valueChange)="MakeChange(carMakeSelect.value)" name="selectedMake">
+                                            <input type="text" (input)="filterCarMakes(searchTerm)" placeholder="Search Car Makes" [(ngModel)]="searchTerm" name="search" />
+                                            <mat-option *ngFor="let car of filteredCarMakes" [value]="car.name">
+                                                {{ car.name }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="mb-4" *ngIf="selectedCarMake">
+                                    <h3 class="mb-3 h6 text-uppercase text-black d-block">Models</h3>
+                                    <mat-form-field>
+                                        <mat-label>Car Models</mat-label>
+                                        <mat-select #carModelSelect (opened)="carModelSelect.openedChange.subscribe(handleSelectOpened)" (closed)="resetModelSearch(carMakeSelect.value)" [(ngModel)]="selectedCarModel" name="selectedModel">
+                                            <input type="text" (input)="filterCarModels(carMakeSelect.value, searchTerm)" placeholder="Search Car Models" [(ngModel)]="searchTerm" name="search" />
+                                            <mat-option *ngFor="let car of filteredCarModels" [value]="car.name">
+                                                {{ car.name }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h3 class="mb-3 h6 text-uppercase text-black d-block">Color</h3>
+                                    <mat-form-field>
+                                        <mat-label>Colors</mat-label>
+                                        <mat-select #carColorSelect (opened)="carColorSelect.openedChange.subscribe(handleSelectOpened)" (closed)="ResetColorSearch()" [(ngModel)]="selectedCarColor" name="selectedColor">
+                                            <input type="text" (input)="FilterCarColor(searchTerm)" placeholder="Search Car Colors" [(ngModel)]="searchTerm" name="search" />
+                                            <mat-option *ngFor="let color of filteredCarColors" [value]="color.name">
+                                                {{ color.name }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h3 class="mb-3 h6 text-uppercase text-black d-block">Coonditions</h3>
+                                    <mat-form-field>
+                                        <mat-label>Conditions</mat-label>
+                                        <mat-select #carConditionSelect (opened)="carConditionSelect.openedChange.subscribe(handleSelectOpened)" (closed)="ResetConditionSearch()" [(ngModel)]="selectedCarCondition" name="selectedCondition">
+                                            <input type="text" (input)="FilterCarCondition(searchTerm)" placeholder="Search Car Colors" [(ngModel)]="searchTerm" name="search" />
+                                            <mat-option *ngFor="let condition of filteredCarConditions" [value]="condition.name">
+                                                {{ condition.name }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+
+                                <!-- <div class="mb-4">
+                                    <h3 class="mb-3 h6 text-uppercase text-black d-block">Color</h3>
+                                    <a href="#" class="d-flex color-item align-items-center"> <span class="bg-danger color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Red (2,429)</span> </a>
+                                    <a href="#" class="d-flex color-item align-items-center"> <span class="bg-success color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Green (2,298)</span> </a>
+                                    <a href="#" class="d-flex color-item align-items-center"> <span class="bg-info color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Blue (1,075)</span> </a>
+                                    <a href="#" class="d-flex color-item align-items-center"> <span class="bg-primary color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Purple (1,075)</span> </a>
+                                </div> -->
+
+                                <div class="mb-4">
+                                    <button class="btn btn-primary btn-sm" style="width: 100%; height: 100%" (click)="FilterCars('catalogue', carMakeSelect.value, selectedCarMake ? carModelSelect.value : null, carColorSelect.value, minYear.value, maxYear.value, carConditionSelect.value, minMilage.value, maxMilage.value)">Apply Filter</button>
+                                    <button class="btn btn-secondary btn-sm" style="width: 100%; height: 100%" (click)="ResetFilteredCars('catalogue')">Reset Filter</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -404,26 +465,92 @@
                         </div>
 
                         <div class="border p-4 rounded mb-4">
-                            <div class="mb-4">
-                                <h3 class="mb-3 h6 text-uppercase text-black d-block">Filter by Price</h3>
-                                <div id="slider-range" class="border-primary"></div>
-                                <input type="text" name="text" id="amount" class="form-control border-0 pl-0 bg-white" disabled="" />
-                            </div>
+                            <form>
+                                <div class="mb-4">
+                                    <h3 class="mb-3 h6 text-uppercase text-black d-block">Filter</h3>
+                                </div>
 
-                            <div class="mb-4">
-                                <h3 class="mb-3 h6 text-uppercase text-black d-block">Size</h3>
-                                <label for="s_sm" class="d-flex"> <input type="checkbox" id="s_sm" class="mr-2 mt-1" /> <span class="text-black">Small (2,319)</span> </label>
-                                <label for="s_md" class="d-flex"> <input type="checkbox" id="s_md" class="mr-2 mt-1" /> <span class="text-black">Medium (1,282)</span> </label>
-                                <label for="s_lg" class="d-flex"> <input type="checkbox" id="s_lg" class="mr-2 mt-1" /> <span class="text-black">Large (1,392)</span> </label>
-                            </div>
+                                <div class="mb-4">
+                                    <h3 class="mb-3 h6 text-uppercase text-black d-block">Year</h3>
+                                    <mat-slider #carYearSlider min="2000" max="2025" step="5" discrete="true" showTickMarks="true">
+                                        <input #minYear matSliderStartThumb [(ngModel)]="selectedMinYear" name="minYear" />
+                                        <input #maxYear matSliderEndThumb [(ngModel)]="selectedMaxYear" name="maxYear" />
+                                    </mat-slider>
+                                </div>
 
-                            <div class="mb-4">
-                                <h3 class="mb-3 h6 text-uppercase text-black d-block">Color</h3>
-                                <a href="#" class="d-flex color-item align-items-center"> <span class="bg-danger color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Red (2,429)</span> </a>
-                                <a href="#" class="d-flex color-item align-items-center"> <span class="bg-success color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Green (2,298)</span> </a>
-                                <a href="#" class="d-flex color-item align-items-center"> <span class="bg-info color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Blue (1,075)</span> </a>
-                                <a href="#" class="d-flex color-item align-items-center"> <span class="bg-primary color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Purple (1,075)</span> </a>
-                            </div>
+                                <div class="mb-4">
+                                    <h3 class="mb-3 h6 text-uppercase text-black d-block">Milage</h3>
+                                    <mat-slider #carMilageSlider min="0" max="500000" step="50000" discrete="true" showTickMarks="true">
+                                        <input #minMilage matSliderStartThumb [(ngModel)]="selectedMinMilage" name="minMilage" />
+                                        <input #maxMilage matSliderEndThumb [(ngModel)]="selectedMaxMilage" name="maxMilage" />
+                                    </mat-slider>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h3 class="mb-3 h6 text-uppercase text-black d-block">Makes</h3>
+                                    <mat-form-field>
+                                        <mat-label>Car Makes</mat-label>
+                                        <mat-select #carMakeSelect (opened)="carMakeSelect.openedChange.subscribe(handleSelectOpened)" (closed)="resetMakeSearch()" [(ngModel)]="selectedCarMake" (valueChange)="MakeChange(carMakeSelect.value)" name="selectedMake">
+                                            <input type="text" (input)="filterCarMakes(searchTerm)" placeholder="Search Car Makes" [(ngModel)]="searchTerm" name="search" />
+                                            <mat-option *ngFor="let car of filteredCarMakes" [value]="car.name">
+                                                {{ car.name }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="mb-4" *ngIf="selectedCarMake">
+                                    <h3 class="mb-3 h6 text-uppercase text-black d-block">Models</h3>
+                                    <mat-form-field>
+                                        <mat-label>Car Models</mat-label>
+                                        <mat-select #carModelSelect (opened)="carModelSelect.openedChange.subscribe(handleSelectOpened)" (closed)="resetModelSearch(carMakeSelect.value)" [(ngModel)]="selectedCarModel" name="selectedModel">
+                                            <input type="text" (input)="filterCarModels(carMakeSelect.value, searchTerm)" placeholder="Search Car Models" [(ngModel)]="searchTerm" name="search" />
+                                            <mat-option *ngFor="let car of filteredCarModels" [value]="car.name">
+                                                {{ car.name }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h3 class="mb-3 h6 text-uppercase text-black d-block">Color</h3>
+                                    <mat-form-field>
+                                        <mat-label>Colors</mat-label>
+                                        <mat-select #carColorSelect (opened)="carColorSelect.openedChange.subscribe(handleSelectOpened)" (closed)="ResetColorSearch()" [(ngModel)]="selectedCarColor" name="selectedColor">
+                                            <input type="text" (input)="FilterCarColor(searchTerm)" placeholder="Search Car Colors" [(ngModel)]="searchTerm" name="search" />
+                                            <mat-option *ngFor="let color of filteredCarColors" [value]="color.name">
+                                                {{ color.name }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h3 class="mb-3 h6 text-uppercase text-black d-block">Coonditions</h3>
+                                    <mat-form-field>
+                                        <mat-label>Conditions</mat-label>
+                                        <mat-select #carConditionSelect (opened)="carConditionSelect.openedChange.subscribe(handleSelectOpened)" (closed)="ResetConditionSearch()" [(ngModel)]="selectedCarCondition" name="selectedCondition">
+                                            <input type="text" (input)="FilterCarCondition(searchTerm)" placeholder="Search Car Colors" [(ngModel)]="searchTerm" name="search" />
+                                            <mat-option *ngFor="let condition of filteredCarConditions" [value]="condition.name">
+                                                {{ condition.name }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+
+                                <!-- <div class="mb-4">
+                                    <h3 class="mb-3 h6 text-uppercase text-black d-block">Color</h3>
+                                    <a href="#" class="d-flex color-item align-items-center"> <span class="bg-danger color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Red (2,429)</span> </a>
+                                    <a href="#" class="d-flex color-item align-items-center"> <span class="bg-success color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Green (2,298)</span> </a>
+                                    <a href="#" class="d-flex color-item align-items-center"> <span class="bg-info color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Blue (1,075)</span> </a>
+                                    <a href="#" class="d-flex color-item align-items-center"> <span class="bg-primary color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Purple (1,075)</span> </a>
+                                </div> -->
+
+                                <div class="mb-4">
+                                    <button class="btn btn-primary btn-sm" style="width: 100%; height: 100%" (click)="FilterCars('engineType', carMakeSelect.value, selectedCarMake ? carModelSelect.value : null, carColorSelect.value, minYear.value, maxYear.value, carConditionSelect.value, minMilage.value, maxMilage.value)">Apply Filter</button>
+                                    <button class="btn btn-secondary btn-sm" style="width: 100%; height: 100%" (click)="ResetFilteredCars('engineType')">Reset Filter</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -477,7 +604,7 @@
         <div class="site-section">
             <div class="container">
                 <div class="row mb-5">
-                    <div class="col-md-9 order-2">
+                    <div class="col-md-12 order-1">
                         <div class="row">
                             <div class="col-md-12 mb-5">
                                 <div class="float-md-left mb-4">
@@ -535,52 +662,6 @@
                                         <li><button class="btn btn-secondary btn-sm" (click)="nextPage(catalogueCars)">&gt;</button></li>
                                     </ul>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3 order-1 mb-5 mb-md-0">
-                        <div class="border p-4 rounded mb-4">
-                            <h3 class="mb-3 h6 text-uppercase text-black d-block">Categories</h3>
-                            <ul class="list-unstyled mb-0">
-                                <li class="mb-1">
-                                    <button (click)="DisableAllViews(true); SetEngineTypePage('Fuel'); engineTypeCarsPage = true" class="my-second-button d-flex">
-                                        <span>Petrol</span>
-                                    </button>
-                                </li>
-                                <li class="mb-1">
-                                    <button (click)="DisableAllViews(true); SetEngineTypePage('Hybrid'); engineTypeCarsPage = true" class="my-second-button d-flex">
-                                        <span>Hybrid</span>
-                                    </button>
-                                </li>
-                                <li class="mb-1">
-                                    <button (click)="DisableAllViews(true); SetEngineTypePage('Electric'); engineTypeCarsPage = true" class="my-second-button d-flex">
-                                        <span>Electric</span>
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="border p-4 rounded mb-4">
-                            <div class="mb-4">
-                                <h3 class="mb-3 h6 text-uppercase text-black d-block">Filter by Price</h3>
-                                <div id="slider-range" class="border-primary"></div>
-                                <input type="text" name="text" id="amount" class="form-control border-0 pl-0 bg-white" disabled="" />
-                            </div>
-
-                            <div class="mb-4">
-                                <h3 class="mb-3 h6 text-uppercase text-black d-block">Size</h3>
-                                <label for="s_sm" class="d-flex"> <input type="checkbox" id="s_sm" class="mr-2 mt-1" /> <span class="text-black">Small (2,319)</span> </label>
-                                <label for="s_md" class="d-flex"> <input type="checkbox" id="s_md" class="mr-2 mt-1" /> <span class="text-black">Medium (1,282)</span> </label>
-                                <label for="s_lg" class="d-flex"> <input type="checkbox" id="s_lg" class="mr-2 mt-1" /> <span class="text-black">Large (1,392)</span> </label>
-                            </div>
-
-                            <div class="mb-4">
-                                <h3 class="mb-3 h6 text-uppercase text-black d-block">Color</h3>
-                                <a href="#" class="d-flex color-item align-items-center"> <span class="bg-danger color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Red (2,429)</span> </a>
-                                <a href="#" class="d-flex color-item align-items-center"> <span class="bg-success color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Green (2,298)</span> </a>
-                                <a href="#" class="d-flex color-item align-items-center"> <span class="bg-info color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Blue (1,075)</span> </a>
-                                <a href="#" class="d-flex color-item align-items-center"> <span class="bg-primary color d-inline-block rounded-circle mr-2"></span> <span class="text-black">Purple (1,075)</span> </a>
                             </div>
                         </div>
                     </div>

@@ -1,7 +1,9 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, Input, OnInit, ViewChild } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "src/environments/environment.development";
 import { OwlOptions } from "ngx-owl-carousel-o";
+import { MatSelect } from "@angular/material/select";
+import { MatSliderRangeThumb } from "@angular/material/slider";
 
 @Component({
     selector: "app-main-page",
@@ -9,6 +11,11 @@ import { OwlOptions } from "ngx-owl-carousel-o";
     styleUrls: ["./main-page.component.css"],
 })
 export class MainPageComponent implements OnInit {
+    @ViewChild("carMakeSelect") carMakeSelect!: MatSelect;
+    @ViewChild("carModelSelect") carModelSelect!: MatSelect;
+    @ViewChild("carColorSelect") carColorSelect!: MatSelect;
+    @ViewChild("carConditionSelect") carConditionSelect!: MatSelect;
+
     mainPage: boolean = true;
     cataloguePage: boolean = false;
     singleItemPage: boolean = false;
@@ -25,11 +32,26 @@ export class MainPageComponent implements OnInit {
 
     carMakes: any = [];
     carModels: any = [];
+    carColors: any = [];
+    carConditions: any = [];
+
+    filteredCars: any = [];
+    filteredCarMakes: any = [];
+    filteredCarModels: any = [];
+    filteredCarColors: any = [];
+    filteredCarConditions: any = [];
+    searchTerm: string = "";
 
     selectedCar: any;
 
     selectedCarMake: any;
     selectedCarModel: any;
+    selectedCarColor: any;
+    selectedCarCondition: any;
+    selectedMinYear: number = 2000;
+    selectedMaxYear: number = new Date().getFullYear();
+    selectedMinMilage: number = 0;
+    selectedMaxMilage: number = 500000;
 
     displayedCars: any[] = []; // Array to hold the cars to be displayed on current page
     itemsPerPage: number = 8; // Number of cars to display per page
@@ -73,15 +95,35 @@ export class MainPageComponent implements OnInit {
     constructor(private http: HttpClient) {}
 
     ngOnInit(): void {
-        this.http.get(environment.BackEndUrl + "/api/car-makes").subscribe(
+        this.http.get(environment.BackEndUrl + "/api/conditions").subscribe(
             (data) => {
-                this.carMakes = data;
-                this.http.get(environment.BackEndUrl + "/api/car-models").subscribe(
+                this.carConditions = data;
+                this.filteredCarConditions = this.carConditions;
+                this.http.get(environment.BackEndUrl + "/api/colors").subscribe(
                     (data) => {
-                        this.carModels = data;
-                        this.http.get(environment.BackEndUrl + "/api/car?featured=True").subscribe(
+                        this.carColors = data;
+                        this.filteredCarColors = this.carColors;
+                        this.http.get(environment.BackEndUrl + "/api/car-makes").subscribe(
                             (data) => {
-                                this.featuredCars = data;
+                                this.carMakes = data;
+                                this.filteredCarMakes = this.carMakes;
+                                this.http.get(environment.BackEndUrl + "/api/car-models").subscribe(
+                                    (data) => {
+                                        this.carModels = data;
+                                        this.filteredCarModels = this.carModels;
+                                        this.http.get(environment.BackEndUrl + "/api/car?featured=True").subscribe(
+                                            (data) => {
+                                                this.featuredCars = data;
+                                            },
+                                            (error) => {
+                                                console.log(error);
+                                            }
+                                        );
+                                    },
+                                    (error) => {
+                                        console.log(error);
+                                    }
+                                );
                             },
                             (error) => {
                                 console.log(error);
@@ -112,6 +154,7 @@ export class MainPageComponent implements OnInit {
             this.currentPage = 1;
             this.totalPages = 0;
             this.selectedCar = null;
+            this.filteredCars = [];
             this.contactFormData = {
                 firstName: "",
                 lastName: "",
@@ -120,6 +163,14 @@ export class MainPageComponent implements OnInit {
                 body: "",
                 carID: null,
             };
+            this.selectedCarMake = null;
+            this.selectedCarModel = null;
+            this.selectedCarColor = null;
+            this.selectedCarCondition = null;
+            this.selectedMinYear = 2000;
+            this.selectedMaxYear = new Date().getFullYear();
+            this.selectedMinMilage = 0;
+            this.selectedMaxMilage = 500000;
         }
     }
 
@@ -139,9 +190,11 @@ export class MainPageComponent implements OnInit {
     }
 
     GetCatalogueItems(): void {
+        this.cataloguePage = true;
         this.http.get(environment.BackEndUrl + "/api/car").subscribe(
             (data) => {
                 this.catalogueCars = data;
+                this.filteredCars = this.catalogueCars;
                 this.totalPages = Math.ceil(this.catalogueCars.length / this.itemsPerPage);
                 this.updateDisplayedCars(this.catalogueCars);
             },
@@ -156,11 +209,13 @@ export class MainPageComponent implements OnInit {
     }
 
     SetEngineTypePage(_engineType: string) {
+        this.engineTypeCarsPage = true;
         if (_engineType == "Fuel" || _engineType == "Hybrid" || _engineType == "Electric") {
             this.engineTypeName = _engineType;
             this.http.get(environment.BackEndUrl + "/api/car?engineType=" + _engineType).subscribe(
                 (data) => {
                     this.engineTypeCars = data;
+                    this.filteredCars = this.engineTypeCars;
                     this.totalPages = Math.ceil(this.engineTypeCars.length / this.itemsPerPage);
                     this.updateDisplayedCars(this.engineTypeCars);
                 },
@@ -215,5 +270,241 @@ export class MainPageComponent implements OnInit {
                 console.log(error);
             }
         );
+    }
+
+    filterCarMakes(searchTerm: string): void {
+        if (searchTerm === "") {
+            this.filteredCarMakes = this.carMakes;
+        } else {
+            this.filteredCarMakes = this.carMakes.filter((car: any) => car.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        }
+    }
+
+    MakeChange(data: any): void {
+        if (this.selectedCarMake) {
+            this.carModelSelect.value = null;
+        }
+        this.filterCarModels(data, "");
+    }
+
+    filterCarModels(make: string, searchTerm: string): void {
+        if (make === "") {
+            if (searchTerm === "") {
+                this.filteredCarModels = this.carModels;
+            } else {
+                this.filteredCarModels = this.carModels.filter((car: any) => car.name.toLowerCase().includes(searchTerm.toLowerCase()));
+            }
+        } else {
+            if (searchTerm === "") {
+                this.filteredCarModels = this.carModels.filter((car: any) => {
+                    return car.carMake == make;
+                });
+            } else {
+                this.filteredCarModels = this.carModels.filter((car: any) => car.carMake == make);
+                this.filteredCarModels = this.filteredCarModels.filter((car: any) => car.name.toLowerCase().includes(searchTerm.toLowerCase()));
+            }
+        }
+    }
+
+    FilterCarColor(searchTerm: string): void {
+        if (searchTerm == "") {
+            this.filteredCarColors = this.carColors;
+        } else {
+            this.filteredCarColors = this.carColors.filter((color: any) => color.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        }
+    }
+
+    FilterCarCondition(searchTerm: string): void {
+        if (searchTerm == "") {
+            this.filteredCarConditions = this.carConditions;
+        } else {
+            this.filteredCarConditions = this.filteredCarConditions.filter((condition: any) => condition.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        }
+    }
+
+    resetMakeSearch(): void {
+        this.searchTerm = "";
+        this.filterCarMakes("");
+    }
+
+    resetModelSearch(data: any): void {
+        this.searchTerm = "";
+        this.filterCarModels(data, "");
+    }
+
+    ResetColorSearch(): void {
+        this.searchTerm = "";
+        this.FilterCarColor("");
+    }
+
+    ResetConditionSearch(): void {
+        this.searchTerm = "";
+        this.FilterCarCondition("");
+    }
+
+    handleSelectOpened(opened: boolean): void {
+        if (!opened) {
+            this.searchTerm = "";
+            this.resetMakeSearch;
+            // this.resetModelSearch(this.selectedCarMake);
+            this.ResetColorSearch;
+            this.ResetConditionSearch;
+        }
+    }
+
+    async FilterCars(page: any, carMake: any, carModel: any, carColor: any, minYear: any, maxYear: any, condition: any, minMilage: any, maxMilage: any): Promise<void> {
+        if (page == "catalogue") {
+            this.filteredCars = this.catalogueCars;
+        } else if (page == "engineType") {
+            this.filteredCars = this.engineTypeCars;
+        }
+
+        if (carMake) {
+            await this.filterByCarMake(carMake);
+        }
+
+        if (carModel) {
+            await this.filterByCarModel(carModel);
+        }
+
+        if (carColor) {
+            await this.filterByCarColor(carColor);
+        }
+
+        if (minYear) {
+            await this.filterByMinYear(minYear);
+        } else {
+            await this.filterByDefaultMinYear();
+        }
+
+        if (maxYear) {
+            await this.filterByMaxYear(maxYear);
+        } else {
+            await this.filterByDefaultMaxYear();
+        }
+
+        if (condition) {
+            await this.filterByCondition(condition);
+        }
+
+        if (minMilage) {
+            await this.filterByMinMilage(minMilage);
+        } else {
+            await this.filterByDefaultMinMilage();
+        }
+
+        if (maxMilage) {
+            await this.filterByMaxMilage(maxMilage);
+        } else {
+            await this.filterByDefaultMaxMilage();
+        }
+
+        this.totalPages = Math.ceil(this.filteredCars.length / this.itemsPerPage);
+        this.updateDisplayedCars(this.filteredCars);
+    }
+
+    ResetFilteredCars(page: any): void {
+        this.carMakeSelect.value = null;
+        if (this.selectedCarMake) {
+            this.carModelSelect.value = null;
+        }
+        this.carColorSelect.value = null;
+        this.carConditionSelect.value = null;
+
+        this.selectedCarMake = null;
+        this.selectedCarModel = null;
+        this.selectedCarColor = null;
+        this.selectedCarCondition = null;
+        this.selectedMinYear = 2000;
+        this.selectedMaxYear = new Date().getFullYear();
+        this.selectedMinMilage = 0;
+        this.selectedMaxMilage = 500000;
+
+        if (page == "catalogue") {
+            this.filteredCars = this.catalogueCars;
+        } else if (page == "engineType") {
+            this.filteredCars = this.engineTypeCars;
+        }
+
+        this.totalPages = Math.ceil(this.filteredCars.length / this.itemsPerPage);
+        this.updateDisplayedCars(this.filteredCars);
+    }
+
+    ///////////////////////////////////////////////////
+    //                                               //
+    //               Helper Functions                //
+    //                                               //
+    ///////////////////////////////////////////////////
+
+    async filterByCarMake(carMake: any): Promise<void> {
+        this.filteredCars = this.filteredCars.filter((car: any) => {
+            return car.carModel.carMake == carMake;
+        });
+    }
+
+    async filterByCarModel(carModel: any): Promise<void> {
+        this.filteredCars = this.filteredCars.filter((car: any) => {
+            return car.carModel.name == carModel;
+        });
+    }
+
+    async filterByCarColor(carColor: any): Promise<void> {
+        this.filteredCars = this.filteredCars.filter((car: any) => {
+            return car.color == carColor;
+        });
+    }
+
+    async filterByMinYear(minYear: any): Promise<void> {
+        this.filteredCars = this.filteredCars.filter((car: any) => {
+            return car.year >= minYear;
+        });
+    }
+
+    async filterByDefaultMinYear(): Promise<void> {
+        this.filteredCars = this.filteredCars.filter((car: any) => {
+            return car.year >= 2000;
+        });
+    }
+
+    async filterByMaxYear(maxYear: any): Promise<void> {
+        this.filteredCars = this.filteredCars.filter((car: any) => {
+            return car.year <= maxYear;
+        });
+    }
+
+    async filterByDefaultMaxYear(): Promise<void> {
+        this.filteredCars = this.filteredCars.filter((car: any) => {
+            return car.year <= new Date().getFullYear();
+        });
+    }
+
+    async filterByCondition(condition: any): Promise<void> {
+        this.filteredCars = this.filteredCars.filter((car: any) => {
+            return car.condition == condition;
+        });
+    }
+
+    async filterByMinMilage(minMilage: any): Promise<void> {
+        this.filteredCars = this.filteredCars.filter((car: any) => {
+            return Number(car.milage) >= minMilage;
+        });
+    }
+
+    async filterByDefaultMinMilage(): Promise<void> {
+        this.filteredCars = this.filteredCars.filter((car: any) => {
+            return Number(car.milage) >= 0;
+        });
+    }
+
+    async filterByMaxMilage(maxMilage: any): Promise<void> {
+        this.filteredCars = this.filteredCars.filter((car: any) => {
+            return Number(car.milage) <= maxMilage;
+        });
+    }
+
+    async filterByDefaultMaxMilage(): Promise<void> {
+        this.filteredCars = this.filteredCars.filter((car: any) => {
+            return Number(car.milage) <= 500000;
+        });
     }
 }
