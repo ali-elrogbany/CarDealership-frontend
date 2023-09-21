@@ -1,3 +1,3 @@
 export const environment = {
-    BackEndUrl: "",
+    BackEndUrl: "https://cardealershipapi-aelrogbany.b4a.run/",
 };

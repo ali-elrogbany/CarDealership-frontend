@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, ViewChild } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { environment } from "src/environments/environment.development";
+import { environment } from "src/environments/environment";
 import { OwlOptions } from "ngx-owl-carousel-o";
 import { MatSelect } from "@angular/material/select";
 import { MatSliderRangeThumb } from "@angular/material/slider";
