@@ -1,0 +1,89 @@
+.my-button {
+    all: revert;
+    color: #679aa4;
+    border: none;
+    border-radius: none;
+    background-color: transparent;
+    transition: 0.3s all ease;
+    text-decoration: none;
+    background-color: transparent;
+    font-size: 1.75rem;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.2;
+    outline: none;
+    padding: 0px;
+    padding-inline: 0px;
+    padding-block: 0px;
+}
+
+.my-button.pointer {
+    cursor: pointer;
+}
+
+.my-button:active {
+    border: 0px;
+    box-shadow: none;
+    transition: 0.3s all ease;
+    text-decoration: none;
+    outline: none;
+}
+
+.my-button:enabled {
+    outline: none;
+}
+
+.my-button:hover {
+    color: #5e8c96;
+    cursor: pointer;
+    transition: 0.3s all ease;
+    text-decoration: none;
+    outline: none;
+}
+
+.my-second-button {
+    all: revert;
+    font-family: "Mukta", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    color: black;
+    border: none;
+    border-radius: none;
+    background-color: transparent;
+    text-decoration: none;
+    outline: none;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.my-second-button.pointer {
+    cursor: pointer;
+}
+
+.my-second-button:hover {
+    cursor: pointer;
+    text-decoration: none;
+    outline: none;
+}
+
+.my-second-button:active {
+    border: 0px;
+    box-shadow: none;
+    transition: 0.3s all ease;
+    text-decoration: none;
+    outline: none;
+}
+
+.my-second-button:enabled {
+    outline: none;
+}
+
+.my-filter-dropdown {
+    max-height: 180px;
+    overflow-y: scroll;
+    min-width: 100% !important;
+    background-attachment: local, local, scroll, scroll;
+}
+
+.my-filter-dropdown-item {
+    white-space: normal;
+}
